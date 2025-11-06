@@ -1,9 +1,0 @@
-size_board : 100
-
-# Player 1 :
-player1_auto : True
-player1_strategy : mcts
-
-# Player 2 :
-player2_auto : False
-player2_strategy : random_best

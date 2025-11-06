@@ -1,18 +1,33 @@
-from variables import variables
-import random
+from variables import variables, Strategy
 import sys
+import time
 
 
-if (len(sys.argv) != 4):
-    raise SystemExit('Usage: python3 main.py <depth> <nb_games> <display_game>')
+# Parse command line arguments
+if len(sys.argv) != 9:
+    print('Usage: python3 main.py <depth> <nb_games> <display_game> <size_board> <player1_auto> <player1_strategy> <player2_auto> <player2_strategy>')
+    print('Example: python3 main.py 2 1 True 100 True mcts False random_best')
+    sys.exit(1)
 
+# Set basic game parameters
 variables.depth_board = int(sys.argv[1])
 if variables.depth_board not in [2, 3]:
     raise SystemExit(f'Depth must be 2 or 3')
 
 variables.nb_games = int(sys.argv[2])
-variables.display_game = sys.argv[3] == 'True'
+variables.display_game = sys.argv[3].lower() == 'true'
 
+# Set additional parameters
+size_board = int(sys.argv[4])
+player1_auto = sys.argv[5].lower() == 'true'
+player1_strategy = Strategy(sys.argv[6])
+player2_auto = sys.argv[7].lower() == 'true'
+player2_strategy = Strategy(sys.argv[8])
+
+# Apply parameters
+variables.set_parameters(size_board, player1_auto, player1_strategy, player2_auto, player2_strategy)
+
+# Check if we need to force display
 if not variables.display_game and (not variables.player1_auto or not variables.player2_auto):
     print('Error: You must display the game if at least one player is not automatic\nTurning display on...')
     variables.display_game = True
@@ -20,7 +35,7 @@ if not variables.display_game and (not variables.player1_auto or not variables.p
 
 from player import Player
 from game import game
-import time
+
 if variables.display_game:
     import pygame
     KEY_SPACE = pygame.K_SPACE
@@ -109,11 +124,11 @@ def analyze_results():
         file.write(f'Number of games: {nb_games}\n')
         file.write(f'Time of execution: {time.time() - time_begin:.2f} seconds\n\n')
         if variables.player1_auto:
-            file.write(f'Player 1 : Automatic, strategy = {variables.player1_strategy}\n')
+            file.write(f'Player 1 : Automatic, strategy = {variables.player1_strategy.value}\n')
         else:
             file.write(f'Player 1 : Manual\n')
         if variables.player2_auto:
-            file.write(f'Player 2 : Automatic, strategy = {variables.player2_strategy}\n')
+            file.write(f'Player 2 : Automatic, strategy = {variables.player2_strategy.value}\n')
         else:
             file.write(f'Player 2 : Manual\n')
         file.write(f'Number of draws: {nb_draw} ({percentage_draw:.2f}% of the game)\n')
@@ -122,15 +137,13 @@ def analyze_results():
         file.write(f'******************************************************\n\n')
 
 
-
-
 time_begin = time.time()
 original_nb_games = variables.nb_games
 
 if variables.display_game:
-    clock = pygame.time.Clock() # Creates a clock object to control FPS
+    clock = pygame.time.Clock()  # Creates a clock object to control FPS
 
-start_one_game() # The game start at the beginning
+start_one_game()  # The game starts at the beginning
 
 if variables.nb_games == 0:
     exit_game(quit_all=False)

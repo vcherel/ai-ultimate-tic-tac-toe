@@ -9,3 +9,14 @@ Number of player 2 wins: 0 (0.00%)
 
 ******************************************************
 
+Number of games: 0
+Time of execution: 8.35 seconds
+
+Player 1 : Automatic, strategy = mcts
+Player 2 : Manual
+Number of draws: 0 (0.00% of the game)
+Number of player 1 wins: 0 (0.00%)
+Number of player 2 wins: 0 (0.00%)
+
+******************************************************
+
