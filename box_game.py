@@ -184,7 +184,6 @@ class BoxGame:
 
         if self.parent is not None and self.parent.detect_victory():
             self.parent.victory(self.state)
-            victory = True
 
         # Find the next box in which the player can play
         first_box = self.get_first_box()
@@ -195,17 +194,7 @@ class BoxGame:
         for playable_box in playable_boxes:
             playable_box.make_unplayable()
 
-        if variables.depth_board == 2:
-            next_box_to_play: BoxGame = first_box.childs[self.id_box]
-
-        elif variables.depth_board == 3:
-            child: BoxGame = first_box.childs[self.parent.id_box]
-        
-            if child is None or child.childs == []:
-                first_box.make_all_playable()
-                return
-            else:
-                next_box_to_play: BoxGame = child.childs[self.id_box]
+        next_box_to_play: BoxGame = first_box.childs[self.id_box]
 
         next_box_to_play.make_childs_playable()
 
@@ -369,18 +358,7 @@ def are_all_boxes_in_same_board(boxes: list[BoxGame]) -> bool:
     
     id_parent = boxes[0].parent.id_box
     
-    if variables.depth_board == 2:
-        for box in boxes:
-            if box.parent.id_box != id_parent:
-                return False
-        return True
-    
-    else:  # depth_board == 3
-        id_parent_parent = boxes[0].parent.parent.id_box
-        for box in boxes:
-            parent: BoxGame = box.parent
-            if parent.id_box != id_parent:
-                return False
-            if parent.parent.id_box != id_parent_parent:
-                return False
-        return True
+    for box in boxes:
+        if box.parent.id_box != id_parent:
+            return False
+    return True

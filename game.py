@@ -14,11 +14,13 @@ class Game:
         player1 = Player(team=True, auto=variables.player1_auto, strategy=variables.player1_strategy)
         player2 = Player(team=False, auto=variables.player2_auto, strategy=variables.player2_strategy)
         self.players = [player1, player2]
+        self.first_move = True
 
     def start(self):
         """
         Called at the beginning of the game
         """
+        self.first_move = True
         board.init()
         variables.set_winner(None)
         variables.set_finished(False)
@@ -51,7 +53,7 @@ class Game:
         else:
             # Play automatically
             actual_player: Player = variables.actual_player
-            box_to_play = actual_player.choose_move(playable_boxes)
+            box_to_play = actual_player.choose_move(playable_boxes, self.first_move)
             
             if box_to_play not in playable_boxes:
                 raise ValueError(f'Error: The chosen box to play is not in the list of playable boxes')
@@ -68,6 +70,7 @@ class Game:
         """
         Called when a player has played
         """
+        self.first_move = False
         current_team = variables.get_current_team()
         
         # Update the actual player

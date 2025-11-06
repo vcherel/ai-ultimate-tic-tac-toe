@@ -8,8 +8,12 @@ The ultimate tic-tac-toe is like the classic game, except that to win each box, 
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install pygame
+pip install -r requirements.txt
 python3 main.py
 ```
 
 The SPACE button can be played at anytime to play automatically the next move.
+
+
+ADD SRC
+Make funny comments in confidence

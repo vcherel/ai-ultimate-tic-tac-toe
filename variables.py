@@ -23,7 +23,6 @@ class Variables:
         # From call of the script main.py
         self.nb_games = None  # Number of games to play
         self.display_game = None
-        self.depth_board = None
         self.size_board = None
         self.player1_auto = None
         self.player1_strategy = None
@@ -84,9 +83,6 @@ class Variables:
 
     def set_text_victory(self, text, textRect):
         self.text_victory = (text, textRect)
-
-    def set_depth_board(self, depth_board):
-        self.depth_board = depth_board
 
     def add_to_list_result(self, result):
         self.list_result.append(result)

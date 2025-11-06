@@ -7,8 +7,6 @@ def parse_args():
         description="Run the game with configurable players and display options.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('--depth', type=int, choices=[2, 3], default=2,
-                        help='Tree depth (2 or 3)')
     parser.add_argument('--nb_games', type=int, default=1,
                         help='Number of games to simulate')
     parser.add_argument('--display_game', type=lambda x: x.lower() == 'true', default=True,
@@ -23,7 +21,7 @@ def parse_args():
                         help='Is player 2 automatic?')
     parser.add_argument('--player2_strategy', type=str, default='mcts',
                         help='Strategy for player 2')
-    parser.add_argument('--mcts_iterations', type=int, default=50,
+    parser.add_argument('--mcts_iterations', type=int, default=80,
                         help='Number of iterations per box done by MCTS algorithm')
     parser.add_argument('--save_results', type=str, default=None,
                         help='Folder to save the game results (default to None)')
@@ -32,12 +30,7 @@ def parse_args():
 
 args = parse_args()
 
-# Validate depth
-if args.depth not in [2, 3]:
-    raise SystemExit('Depth must be 2 or 3')
-
 # Assign to your global variables
-variables.depth_board = args.depth
 variables.nb_games = args.nb_games
 variables.display_game = args.display_game
 variables.size_board = args.size_board

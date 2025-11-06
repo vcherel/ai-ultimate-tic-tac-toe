@@ -1,5 +1,6 @@
 from box_game import BoxGame, find_same_box_in_other_board
 from variables import variables
+from tqdm import tqdm
 import random
 import math
 
@@ -72,19 +73,29 @@ def mcts_search(box_game_board: BoxGame, team, num_iterations):
 
     if variables.previous_mcts is not None:
         root = variables.previous_mcts
-        # print(f'MCTS node gathered : {root.__str__(depth=2)}')
     else:
         root = MCTSNode(box_game_board=box_game_board_copy, team_root=team, team_to_play=team)
-
-    num_iterations = num_iterations * len(root.box_game_board.get_all_playable_boxes())  # The more there is boxes to play, the more we need to simulate
-
+    
+    num_iterations = num_iterations * len(root.box_game_board.get_all_playable_boxes())
+    
+    # Create tqdm progress bar with description and total iterations
+    pbar = tqdm(
+        desc=f'MCTS Search ({num_iterations:,} iterations)',
+        total=num_iterations,
+        unit='iterations',
+        colour='green'
+    )
+    
     for _ in range(num_iterations):
         node = select(root)
         nodes_to_simulate = expand(node)
         for node_to_simulate in nodes_to_simulate:
             score = simulate(node_to_simulate)
             backpropagate(node_to_simulate, score)
-
+        pbar.update(1)  # Update progress bar
+        
+    pbar.close()  # Close the progress bar
+    
     # Choose the best move based on the UCT value if there are more than 3 boxes left
     use_uct = True
     if len(root.box_game_board.get_all_playable_boxes()) <= 3:

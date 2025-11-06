@@ -9,9 +9,8 @@ class Board:
     """
     The board is the initial box of the game
     """
-    def __init__(self, size, depth_board):
+    def __init__(self, size):
         variables.set_screen_size(size)
-        variables.set_depth_board(depth_board)
         self.width, self.length = int(size * 7.5), int(size * 9)
         
         if variables.display_game:
@@ -40,7 +39,7 @@ class Board:
     def init(self):
         if variables.display_game:
             self.first_box = BoxGame(
-                depth=variables.depth_board, 
+                depth=2, 
                 id_box=-1, 
                 parent=None, 
                 draw=True, 
@@ -51,11 +50,11 @@ class Board:
             )
         else:
             self.first_box = BoxGame(
-                depth=variables.depth_board, 
+                depth=2, 
                 id_box=-1, 
                 parent=None, 
                 draw=False
             )
 
 
-board = Board(variables.size_board, variables.depth_board)
+board = Board(variables.size_board)
