@@ -3,7 +3,7 @@ from variables import Strategy, variables
 from mcts_node import mcts_search
 import random
 
-mcts_iterations_per_box = 50
+mcts_iterations_per_box = 1
 
 
 class Player:

@@ -53,7 +53,7 @@ class Variables:
         self.player2_strategy = player2_strategy
         
         # Stop the program if two players have the strategy mcts
-        if self.player1_strategy == Strategy.MCTS and self.player2_strategy == Strategy.MCTS:
+        if self.player1_auto and self.player2_auto and self.player1_strategy == Strategy.MCTS and self.player2_strategy == Strategy.MCTS:
             print('Error: Both players cannot have the strategy MCTS')
             exit()
 

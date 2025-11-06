@@ -1,37 +1,60 @@
 from variables import variables, Strategy
+import argparse
 import sys
 import time
 
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Run the game with configurable players and display options.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument('--depth', type=int, choices=[2, 3], default=2,
+                        help='Tree depth (2 or 3)')
+    parser.add_argument('--nb_games', type=int, default=1,
+                        help='Number of games to simulate')
+    parser.add_argument('--display_game', type=lambda x: x.lower() == 'true', default=True,
+                        help='Whether to display the game (True/False)')
+    parser.add_argument('--size_board', type=int, default=100,
+                        help='Size of the game board')
+    parser.add_argument('--player1_auto', type=lambda x: x.lower() == 'true', default=False,
+                        help='Is player 1 automatic?')
+    parser.add_argument('--player1_strategy', type=str, default='mcts',
+                        help='Strategy for player 1 (e.g., random, mcts)')
+    parser.add_argument('--player2_auto', type=lambda x: x.lower() == 'true', default=True,
+                        help='Is player 2 automatic?')
+    parser.add_argument('--player2_strategy', type=str, default='mcts',
+                        help='Strategy for player 2')
 
-# Parse command line arguments
-if len(sys.argv) != 9:
-    print('Usage: python3 main.py <depth> <nb_games> <display_game> <size_board> <player1_auto> <player1_strategy> <player2_auto> <player2_strategy>')
-    print('Example: python3 main.py 2 1 True 100 True mcts False random_best')
-    sys.exit(1)
+    return parser.parse_args()
 
-# Set basic game parameters
-variables.depth_board = int(sys.argv[1])
-if variables.depth_board not in [2, 3]:
-    raise SystemExit(f'Depth must be 2 or 3')
+args = parse_args()
 
-variables.nb_games = int(sys.argv[2])
-variables.display_game = sys.argv[3].lower() == 'true'
+# Validate depth
+if args.depth not in [2, 3]:
+    raise SystemExit('Depth must be 2 or 3')
 
-# Set additional parameters
-size_board = int(sys.argv[4])
-player1_auto = sys.argv[5].lower() == 'true'
-player1_strategy = Strategy(sys.argv[6])
-player2_auto = sys.argv[7].lower() == 'true'
-player2_strategy = Strategy(sys.argv[8])
+# Assign to your global variables
+variables.depth_board = args.depth
+variables.nb_games = args.nb_games
+variables.display_game = args.display_game
+
+# Build Strategy objects
+player1_strategy = Strategy(args.player1_strategy)
+player2_strategy = Strategy(args.player2_strategy)
 
 # Apply parameters
-variables.set_parameters(size_board, player1_auto, player1_strategy, player2_auto, player2_strategy)
+variables.set_parameters(
+    args.size_board,
+    args.player1_auto,
+    player1_strategy,
+    args.player2_auto,
+    player2_strategy
+)
 
-# Check if we need to force display
+# Enforce display if any player is manual
 if not variables.display_game and (not variables.player1_auto or not variables.player2_auto):
-    print('Error: You must display the game if at least one player is not automatic\nTurning display on...')
+    print('Warning: At least one player is manual. Enabling display.')
     variables.display_game = True
-
 
 from player import Player
 from game import game
