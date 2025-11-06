@@ -1,5 +1,6 @@
 from variables import variables
 
+
 def convert_pos(x):
     screen_size = variables.screen_size
     if type(x) == tuple:

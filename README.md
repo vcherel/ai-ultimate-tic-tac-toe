@@ -1,22 +1,13 @@
-# AI Game Project
+# Ultimate tic-tac-toe AI 
 
 This project was developed as part of a course on artificial intelligence for games during the fourth year at INSA Rennes. The aim of this project is to implement an AI agent capable of playing a game of ultimate tic tac toe.
 
-## Setup
-To use the program, follow these steps:
+The ultimate tic-tac-toe is like the classic game, except that to win each box, you need to solve the tic-tac-toe inside of it. The twist is that the position where we play is determining the position where the opposent will play (the best to understand is to just play a game)
 
-1. Make sure you have Python 3 installed on your system.
-2. Modify the parameters in `parameters.txt` according to your preferences:
-   - `Depth`: Set to either 2 or 3 to adjust the level of depth of the game. (it's not really playable agains AI in depth 3)
-   - `Nb game`: Specify the number of games to play.
-   - `Display game`: Set to either `True` or `False` to indicate whether to display the game or not.
-3. Run the program using the following command:
-   ```
-   python3 main.py <depth> <nb_game> <display_game>
-   ```
-   Replace `<depth>`, `<nb_game>`, and `<display_game>` with appropriate values.
-4. Interact with the program using the following controls:
-   - Press `Space` to make it play by itself.
-   - Press `Arrow Up` to make it play only one turn.
-
-   
+## Quick start
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install pygame
+python3 main.py
+```
