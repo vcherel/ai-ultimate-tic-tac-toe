@@ -40,18 +40,13 @@ class MCTSNode:
         return result
 
 
-    def uct_value(self, uct_exploration_term=1.41):
-        """
-        Exploration term is a term that is added to the score to encourage the exploration of the tree
-        """
+    def uct_value(self):
         if self.visits == 0:
             return float('inf')
         
-        exploration_term = 0
-        if self.parent is not None:
-            exploration_term = uct_exploration_term * math.sqrt(math.log(self.parent.visits) / self.visits)
-
-        return (self.score / self.visits) + exploration_term
+        # Try different exploration constants
+        exploration = math.sqrt(math.log(self.parent.visits) / self.visits)
+        return (self.score / self.visits) + 1.4 * exploration  # Adjust 1.4 as needed
     
     def confidence_value(self):
         """
@@ -102,8 +97,51 @@ def mcts_search(box_game_board: BoxGame, team, num_iterations):
         use_uct = False
     best_child: MCTSNode = select_best_direct_child(root, use_uct=use_uct)
 
+    confidence = round(best_child.confidence_value(), 2)
 
-    print(f'Condidence value : {best_child.confidence_value()} %')
+    if confidence >= 99:
+        message = "Absolutely unstoppable!"
+    elif confidence >= 95:
+        message = "You're cooked!"
+    elif confidence >= 90:
+        message = "Nothing can stop me now!"
+    elif confidence >= 85:
+        message = "I’ve got this in the bag."
+    elif confidence >= 80:
+        message = "Victory is near!"
+    elif confidence >= 75:
+        message = "On my way to win!"
+    elif confidence >= 70:
+        message = "Feeling confident!"
+    elif confidence >= 65:
+        message = "This should go well."
+    elif confidence >= 60:
+        message = "I think I can handle this."
+    elif confidence >= 55:
+        message = "Hmm… I think I can pull this off."
+    elif confidence >= 50:
+        message = "It’s anyone’s game!"
+    elif confidence >= 45:
+        message = "This is tricky… fingers crossed!"
+    elif confidence >= 40:
+        message = "I need to focus here."
+    elif confidence >= 35:
+        message = "Sweating bullets…"
+    elif confidence >= 30:
+        message = "I’m nervous…"
+    elif confidence >= 25:
+        message = "I’m sweating here…"
+    elif confidence >= 20:
+        message = "This isn’t looking great…"
+    elif confidence >= 15:
+        message = "I might be in trouble…"
+    elif confidence >= 10:
+        message = "Yikes… this could go badly."
+    else:
+        message = "Absolutely doomed…"
+
+    print(f"Confidence value: {confidence}% — {message}")
+
 
     # print(f'MCTS node at the end : {root.__str__(depth=2)}')
     # print(f'Chosen move : {best_child.previous_box_played.get_path()}\n')
@@ -119,26 +157,14 @@ def mcts_search(box_game_board: BoxGame, team, num_iterations):
 
 
 def select(node: MCTSNode):
-    """
-    Recursively select the best child node to explore using the UCT (Upper Confidence Bound for Trees) value
-    """
-    if node.childs == []:
-        return node
-
-    best_child: MCTSNode = select_best_direct_child(node)
-
-    # If the node is fully expanded, we will select the best child of it
-    if len(node.childs) == len(node.box_game_board.get_all_playable_boxes()):
-        return select(best_child)
-
-    # We look if there is a child in the childs of best_child with a higher score
-    best_uct = best_child.uct_value()
-    if best_child.childs == []:
-        return best_child
-    if max(child.uct_value() for child in best_child.childs) > best_uct:  # If there is a better child
-        return select(best_child)
-    else:
-        return best_child
+    # Traverse until we find a node that needs expansion
+    while node.childs and len(node.childs) == len(node.box_game_board.get_all_playable_boxes()):
+        # Select child with highest UCT value
+        node = max(node.childs, key=lambda child: child.uct_value())
+    
+    # If node has unexpanded children, return it for expansion
+    # If it's a terminal node, return it
+    return node
 
 
 def select_best_direct_child(node: MCTSNode, use_uct=True):
@@ -191,9 +217,9 @@ def simulate(node: MCTSNode):
     winner_team_simulated = node.box_game_board.simulate(node.team_to_play)
 
     if winner_team_simulated == node.team_root:
-        return 1.0
+        return 3
     elif winner_team_simulated is None:
-        return 0.5
+        return 1
     else:
         return 0.0
 
