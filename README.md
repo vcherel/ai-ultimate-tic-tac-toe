@@ -13,7 +13,3 @@ python3 main.py
 ```
 
 The SPACE button can be played at anytime to play automatically the next move.
-
-
-ADD SRC
-Make funny comments in confidence
