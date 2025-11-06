@@ -1,15 +1,37 @@
 # Ultimate tic-tac-toe AI 
 
-This project was developed as part of a course on artificial intelligence for games during my fourth year at INSA Rennes. The aim of this project is to implement an AI agent capable of playing a game of ultimate tic tac toe.
+This project is an AI agent for playing **Ultimate Tic-Tac-Toe**, developed as part of a course on Artificial Intelligence for games during my fourth year at INSA Rennes. The AI can play automatically using strategies like **Monte Carlo Tree Search (MCTS)**.
 
-The ultimate tic-tac-toe is like the classic game, except that to win each box, you need to solve the tic-tac-toe inside of it. The twist is that the position where we play is determining the position where the opposent will play (the best to understand is to just play a game)
+Ultimate Tic-Tac-Toe is an advanced version of classic Tic-Tac-Toe: each small board must be won individually, and the position of a move dictates where the opponent can play next.
+
+<img src="assets/game.png" width="400" style="display: block; margin: 0 auto;">
+
 
 ## Quick start
+Prepare environment:
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-python3 main.py
 ```
 
-The SPACE button can be played at anytime to play automatically the next move.
+Run the game with default settings (player agains AI):
+```bash
+python3 src/main.py
+```
+Press **SPACE** at any time to let the AI play the next move automatically for the player.
+
+## Command-Line Arguments
+
+The game can be configured using the following options:
+| Argument | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| **`--nb_games`** | `int` | `1` | Number of games to simulate |
+| **`--display_game`** | `bool` | `True` | Display the game on screen (`True`/`False`) |
+| **`--size_board`** | `int` | `100` | Size of the game board |
+| **`--player1_auto`** | `bool` | `False` | Make player 1 automatic (`True`/`False`) |
+| **`--player1_strategy`** | `str` | `'random_best'` | Strategy for player 1 (`mcts`/`random`/`random_best`) |
+| **`--player2_auto`** | `bool` | `True` | Make player 2 automatic (`True`/`False`) |
+| **`--player2_strategy`** | `str` | `'mcts'` | Strategy for player 2 (`mcts`/`random`/`random_best`) |
+| **`--mcts_iterations`** | `int` | `80` | Number of MCTS iterations (Increase the number to have a greater challenge) |
+| **`--save_results`** | `str` | `None` | Folder to save game results |

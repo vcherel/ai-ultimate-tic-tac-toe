@@ -15,7 +15,7 @@ def parse_args():
                         help='Size of the game board')
     parser.add_argument('--player1_auto', type=lambda x: x.lower() == 'true', default=False,
                         help='Is player 1 automatic?')
-    parser.add_argument('--player1_strategy', type=str, default='mcts',
+    parser.add_argument('--player1_strategy', type=str, default='random_best',
                         help='Strategy for player 1')
     parser.add_argument('--player2_auto', type=lambda x: x.lower() == 'true', default=True,
                         help='Is player 2 automatic?')
