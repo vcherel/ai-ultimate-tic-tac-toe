@@ -3,8 +3,6 @@ from variables import Strategy, variables
 from mcts_node import mcts_search
 import random
 
-mcts_iterations_per_box = 1
-
 
 class Player:
     """
@@ -30,7 +28,7 @@ class Player:
             box_to_play = mcts_search(
                 box_game_board=first_box, 
                 team=variables.get_current_team(), 
-                num_iterations=mcts_iterations_per_box
+                num_iterations=variables.mcts_iterations
             )
             return box_to_play
         

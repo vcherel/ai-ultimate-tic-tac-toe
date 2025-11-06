@@ -30,6 +30,7 @@ class Variables:
         self.player2_auto = None
         self.player2_strategy = None
         self.save_results = None
+        self.mcts_iterations = None
         
         # Other variables
         self.screen_size = None

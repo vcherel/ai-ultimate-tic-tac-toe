@@ -1,6 +1,5 @@
 from variables import variables, Strategy
 import argparse
-import sys
 import time
 
 def parse_args():
@@ -24,7 +23,7 @@ def parse_args():
                         help='Is player 2 automatic?')
     parser.add_argument('--player2_strategy', type=str, default='mcts',
                         help='Strategy for player 2')
-    parser.add_argument('--mcts_iterations', type=int, default=1,
+    parser.add_argument('--mcts_iterations', type=int, default=50,
                         help='Number of iterations per box done by MCTS algorithm')
     parser.add_argument('--save_results', type=str, default=None,
                         help='Folder to save the game results (default to None)')
@@ -43,6 +42,7 @@ variables.nb_games = args.nb_games
 variables.display_game = args.display_game
 variables.size_board = args.size_board
 variables.save_results = args.save_results
+variables.mcts_iterations = args.mcts_iterations
 
 
 # Apply game parameters

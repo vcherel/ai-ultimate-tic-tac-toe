@@ -11,3 +11,5 @@ source venv/bin/activate
 pip install pygame
 python3 main.py
 ```
+
+The SPACE button can be played at anytime to play automatically the next move.

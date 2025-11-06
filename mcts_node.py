@@ -85,8 +85,12 @@ def mcts_search(box_game_board: BoxGame, team, num_iterations):
             score = simulate(node_to_simulate)
             backpropagate(node_to_simulate, score)
 
-    # Choose the best move based on the UCT (Upper Confidence Bound for Trees) value
-    best_child: MCTSNode = select_best_direct_child(root)
+    # Choose the best move based on the UCT value if there are more than 3 boxes left
+    use_uct = True
+    if len(root.box_game_board.get_all_playable_boxes()) <= 3:
+        use_uct = False
+    best_child: MCTSNode = select_best_direct_child(root, use_uct=use_uct)
+
 
     print(f'Condidence value : {best_child.confidence_value()} %')
 
@@ -126,15 +130,18 @@ def select(node: MCTSNode):
         return best_child
 
 
-def select_best_direct_child(node: MCTSNode):
+def select_best_direct_child(node: MCTSNode, use_uct=True):
+    if use_uct:
         max_score = max(child.uct_value() for child in node.childs)
         max_children = [child for child in node.childs if child.uct_value() == max_score]
-        
-        if len(max_children) == 1:
-            return max_children[0]
-        else:
-            # If multiple children have the same score, choose randomly
-            return random.choice(max_children)
+    else:
+        max_score = max((child.score / child.visits) if child.visits > 0 else 0 for child in node.childs)
+        max_children = [
+            child for child in node.childs
+            if (child.score / child.visits if child.visits > 0 else 0) == max_score
+        ]
+
+    return random.choice(max_children)
 
 
 def expand(node: MCTSNode):
@@ -173,11 +180,11 @@ def simulate(node: MCTSNode):
     winner_team_simulated = node.box_game_board.simulate(node.team_to_play)
 
     if winner_team_simulated == node.team_root:
-        return 3  # Win
+        return 1.0
     elif winner_team_simulated is None:
-        return 1  # Draw
+        return 0.5
     else:
-        return 0  # Loss
+        return 0.0
 
 
 def backpropagate(node: MCTSNode, score):
