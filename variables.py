@@ -29,6 +29,7 @@ class Variables:
         self.player1_strategy = None
         self.player2_auto = None
         self.player2_strategy = None
+        self.save_results = None
         
         # Other variables
         self.screen_size = None
@@ -42,11 +43,10 @@ class Variables:
         self.previous_mcts = None  # The previous MCTS node that was selected
         self.debug = False  # Variable to use when debugging
 
-    def set_parameters(self, size_board, player1_auto, player1_strategy, player2_auto, player2_strategy):
+    def set_game_parameters(self, player1_auto, player1_strategy, player2_auto, player2_strategy):
         """
         Set game parameters from command line
         """
-        self.size_board = size_board
         self.player1_auto = player1_auto
         self.player1_strategy = player1_strategy
         self.player2_auto = player2_auto

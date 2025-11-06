@@ -19,11 +19,15 @@ def parse_args():
     parser.add_argument('--player1_auto', type=lambda x: x.lower() == 'true', default=False,
                         help='Is player 1 automatic?')
     parser.add_argument('--player1_strategy', type=str, default='mcts',
-                        help='Strategy for player 1 (e.g., random, mcts)')
+                        help='Strategy for player 1')
     parser.add_argument('--player2_auto', type=lambda x: x.lower() == 'true', default=True,
                         help='Is player 2 automatic?')
     parser.add_argument('--player2_strategy', type=str, default='mcts',
                         help='Strategy for player 2')
+    parser.add_argument('--mcts_iterations', type=int, default=1,
+                        help='Number of iterations per box done by MCTS algorithm')
+    parser.add_argument('--save_results', type=str, default=None,
+                        help='Folder to save the game results (default to None)')
 
     return parser.parse_args()
 
@@ -37,18 +41,16 @@ if args.depth not in [2, 3]:
 variables.depth_board = args.depth
 variables.nb_games = args.nb_games
 variables.display_game = args.display_game
+variables.size_board = args.size_board
+variables.save_results = args.save_results
 
-# Build Strategy objects
-player1_strategy = Strategy(args.player1_strategy)
-player2_strategy = Strategy(args.player2_strategy)
 
-# Apply parameters
-variables.set_parameters(
-    args.size_board,
-    args.player1_auto,
-    player1_strategy,
-    args.player2_auto,
-    player2_strategy
+# Apply game parameters
+variables.set_game_parameters(
+    player1_auto=args.player1_auto,
+    player1_strategy=Strategy(args.player1_strategy),
+    player2_auto=args.player2_auto,
+    player2_strategy=Strategy(args.player2_strategy)
 )
 
 # Enforce display if any player is manual
@@ -118,7 +120,8 @@ def exit_game(quit_all=True):
     """
     quit_all = We leave the game window
     """
-    analyze_results()
+    if variables.save_results:
+        analyze_results()
     if variables.display_game:
         if not quit_all:
             # Sometimes we finished the game but we still want to see the result
@@ -143,7 +146,7 @@ def analyze_results():
     percentage_circles = (nb_circles / nb_games) * 100 if nb_games != 0 else 0
     percentage_crosses = (nb_crosses / nb_games) * 100 if nb_games != 0 else 0
 
-    with open('results.txt', 'a') as file:
+    with open(variables.save_results, 'a') as file:
         file.write(f'Number of games: {nb_games}\n')
         file.write(f'Time of execution: {time.time() - time_begin:.2f} seconds\n\n')
         if variables.player1_auto:
