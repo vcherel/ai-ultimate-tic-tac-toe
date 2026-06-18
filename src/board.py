@@ -6,18 +6,15 @@ if variables.display_game:
 
 
 class Board:
-    """
-    The board is the initial box of the game
-    """
     def __init__(self, size):
         variables.set_screen_size(size)
         self.width, self.length = int(size * 7.5), int(size * 9)
-        
+
         if variables.display_game:
             variables.set_screen(pygame.display.set_mode((self.width, self.length)))
             variables.screen.fill(WHITE)
-            pygame.display.set_caption('Ultimate Tic Tac Toe')  # Title of the window
-        
+            pygame.display.set_caption("Ultimate Tic Tac Toe")
+
         self.width_board = self.width
         self.length_board = self.length * 5 // 6
         self.width_lines = self.width_board // 50
@@ -27,9 +24,6 @@ class Board:
         self.first_box.draw_all()
 
     def try_click(self, pos):
-        """
-        Returns True if circle has won, False if cross has won, and None if there is nothing
-        """
         if 0 < pos[0] < self.width_board and 0 < pos[1] < self.length_board:
             return self.first_box.search_click(pos, self.get_all_playable_boxes())
 
@@ -39,22 +33,17 @@ class Board:
     def init(self):
         if variables.display_game:
             self.first_box = BoxGame(
-                depth=2, 
-                id_box=-1, 
-                parent=None, 
-                draw=True, 
-                x=0, 
-                y=0, 
-                width=self.width_board, 
-                width_line=self.width_lines
+                depth=2,
+                id_box=-1,
+                parent=None,
+                draw=True,
+                x=0,
+                y=0,
+                width=self.width_board,
+                width_line=self.width_lines,
             )
         else:
-            self.first_box = BoxGame(
-                depth=2, 
-                id_box=-1, 
-                parent=None, 
-                draw=False
-            )
+            self.first_box = BoxGame(depth=2, id_box=-1, parent=None, draw=False)
 
 
 board = Board(variables.size_board)

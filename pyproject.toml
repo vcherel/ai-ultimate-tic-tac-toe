@@ -1,0 +1,14 @@
+[project]
+name = "ai-ultimate-tic-tac-toe"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "pygame",
+    "tqdm",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "ruff",
+]

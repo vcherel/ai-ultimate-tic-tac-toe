@@ -2,12 +2,11 @@ from enum import Enum
 
 
 class Strategy(Enum):
-    RANDOM = 'random'
-    RANDOM_BEST = 'random_best'
-    MCTS = 'mcts'
+    RANDOM = "random"
+    RANDOM_BEST = "random_best"
+    MCTS = "mcts"
 
 
-# RGB colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GREEN = (175, 250, 175)
@@ -16,12 +15,8 @@ BLUE = (0, 0, 255)
 
 
 class Variables:
-    """
-    This class contains all the variables that are used in all different files
-    """
     def __init__(self):
-        # From call of the script main.py
-        self.nb_games = None  # Number of games to play
+        self.nb_games = None
         self.display_game = None
         self.size_board = None
         self.player1_auto = None
@@ -30,31 +25,33 @@ class Variables:
         self.player2_strategy = None
         self.save_results = None
         self.mcts_iterations = None
-        
-        # Other variables
+
         self.screen_size = None
         self.screen = None
-        self.text_victory = None  # A tuple (text, textRect)
-        self.finished = None  # True if the game is finished
-        self.winner = None  # True : circle won, False : cross won
-        self.actual_player = None  # The player that is playing
-        self.list_result = []  # All the results of the games
-        self.simulating = False  # True if the game is simulating (for MCTS)
-        self.previous_mcts = None  # The previous MCTS node that was selected
-        self.debug = False  # Variable to use when debugging
+        self.text_victory = None  # tuple (text, textRect)
+        self.finished = None
+        self.winner = None  # True: circle won, False: cross won
+        self.actual_player = None
+        self.list_result = []
+        self.simulating = False
+        self.previous_mcts = None
+        self.debug = False
 
-    def set_game_parameters(self, player1_auto, player1_strategy, player2_auto, player2_strategy):
-        """
-        Set game parameters from command line
-        """
+    def set_game_parameters(
+        self, player1_auto, player1_strategy, player2_auto, player2_strategy
+    ):
         self.player1_auto = player1_auto
         self.player1_strategy = player1_strategy
         self.player2_auto = player2_auto
         self.player2_strategy = player2_strategy
-        
-        # Stop the program if two players have the strategy mcts
-        if self.player1_auto and self.player2_auto and self.player1_strategy == Strategy.MCTS and self.player2_strategy == Strategy.MCTS:
-            print('Error: Both players cannot have the strategy MCTS')
+
+        if (
+            self.player1_auto
+            and self.player2_auto
+            and self.player1_strategy == Strategy.MCTS
+            and self.player2_strategy == Strategy.MCTS
+        ):
+            print("Error: Both players cannot have the strategy MCTS")
             exit()
 
     def get_current_team(self):
