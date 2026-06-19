@@ -38,7 +38,7 @@ class Player:
             box_to_play = mcts_search(
                 box_game_board=first_box,
                 team=variables.get_current_team(),
-                num_iterations=variables.mcts_iterations,
+                time_budget=variables.mcts_time,
             )
             return box_to_play
 

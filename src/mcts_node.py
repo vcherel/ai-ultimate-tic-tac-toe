@@ -4,6 +4,7 @@ from tqdm import tqdm
 import multiprocessing
 import random
 import math
+import time
 
 
 def _simulate_once(args):
@@ -74,7 +75,7 @@ class MCTSNode:
         return confidence * 100 / 3  # score is in [0, 3]; normalize to [0, 100]
 
 
-def mcts_search(box_game_board: BoxGame, team, num_iterations):
+def mcts_search(box_game_board: BoxGame, team, time_budget):
     variables.set_simulating(True)
 
     num_workers = multiprocessing.cpu_count()
@@ -88,18 +89,15 @@ def mcts_search(box_game_board: BoxGame, team, num_iterations):
             box_game_board=box_game_board_copy, team_root=team, team_to_play=team
         )
 
-    num_iterations = num_iterations * len(root.box_game_board.get_all_playable_boxes())
-    loop_count = max(1, num_iterations // num_workers)
-
     pbar = tqdm(
-        desc=f"MCTS Search ({loop_count * num_workers:,} simulations, {num_workers} workers)",
-        total=loop_count * num_workers,
+        desc=f"MCTS Search ({num_workers} workers, {time_budget}s budget)",
         unit="sim",
         colour="green",
     )
 
+    start_time = time.time()
     with multiprocessing.Pool(processes=num_workers) as pool:
-        for _ in range(loop_count):
+        while time.time() - start_time < time_budget:
             node = select(root)
             node = expand(node)
             sim_args = [
@@ -109,6 +107,11 @@ def mcts_search(box_game_board: BoxGame, team, num_iterations):
                 backpropagate(node, score)
             pbar.update(num_workers)
 
+    elapsed = time.time() - start_time
+    total_sims = pbar.n
+    pbar.set_description(
+        f"MCTS Search ({total_sims:,} simulations in {elapsed:.2f}s, {num_workers} workers)"
+    )
     pbar.close()
 
     use_uct = len(root.box_game_board.get_all_playable_boxes()) > 3

@@ -42,10 +42,10 @@ def parse_args():
         "--player2_strategy", type=str, default="mcts", help="Strategy for player 2"
     )
     parser.add_argument(
-        "--mcts_iterations",
-        type=int,
-        default=80,
-        help="Number of iterations per box done by MCTS algorithm",
+        "--mcts_time",
+        type=float,
+        default=1.0,
+        help="Time budget in seconds for MCTS per turn",
     )
     parser.add_argument(
         "--save_results",
@@ -63,7 +63,7 @@ variables.nb_games = args.nb_games
 variables.display_game = args.display_game
 variables.size_board = args.size_board
 variables.save_results = args.save_results
-variables.mcts_iterations = args.mcts_iterations
+variables.mcts_time = args.mcts_time
 
 variables.set_game_parameters(
     player1_auto=args.player1_auto,
