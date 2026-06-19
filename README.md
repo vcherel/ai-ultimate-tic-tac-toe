@@ -8,16 +8,14 @@ Ultimate Tic-Tac-Toe is an advanced version of classic Tic-Tac-Toe: each small b
 
 
 ## Quick start
-Prepare environment:
+Install dependencies:
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+uv sync
 ```
 
-Run the game with default settings (player agains AI):
+Run the game with default settings (player against AI):
 ```bash
-python3 src/main.py
+uv run python src/main.py
 ```
 Press **SPACE** at any time to let the AI play the next move automatically for the player.
 

@@ -10,5 +10,9 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pre-commit",
+    "pytest",
     "ruff",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
