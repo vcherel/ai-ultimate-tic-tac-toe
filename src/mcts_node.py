@@ -119,50 +119,217 @@ def mcts_search(box_game_board: BoxGame, team, time_budget):
 
     confidence = round(best_child.confidence_value(), 2)
 
-    if confidence >= 99:
-        message = "Absolutely unstoppable!"
-    elif confidence >= 95:
-        message = "You're cooked!"
-    elif confidence >= 90:
-        message = "Nothing can stop me now!"
-    elif confidence >= 85:
-        message = "I’ve got this in the bag."
-    elif confidence >= 80:
-        message = "Victory is near!"
-    elif confidence >= 75:
-        message = "On my way to win!"
-    elif confidence >= 70:
-        message = "Feeling confident!"
-    elif confidence >= 65:
-        message = "This should go well."
-    elif confidence >= 60:
-        message = "I think I can handle this."
-    elif confidence >= 55:
-        message = "Hmm… I think I can pull this off."
-    elif confidence >= 50:
-        message = "It’s anyone’s game!"
-    elif confidence >= 45:
-        message = "This is tricky… fingers crossed!"
-    elif confidence >= 40:
-        message = "I need to focus here."
-    elif confidence >= 35:
-        message = "Sweating bullets…"
-    elif confidence >= 30:
-        message = "I’m nervous…"
-    elif confidence >= 25:
-        message = "I’m sweating here…"
-    elif confidence >= 20:
-        message = "This isn’t looking great…"
-    elif confidence >= 15:
-        message = "I might be in trouble…"
-    elif confidence >= 10:
-        message = "Yikes… this could go badly."
-    else:
-        message = "Absolutely doomed…"
+    messages_by_threshold = [
+        (
+            99,
+            [
+                "Absolutely unstoppable!",
+                "Resistance is futile.",
+                "Already celebrating.",
+                "You never stood a chance.",
+                "GG, no re.",
+            ],
+        ),
+        (
+            95,
+            [
+                "You’re cooked!",
+                "Pack it up.",
+                "It’s over.",
+                "Just give up already.",
+                "Checkmate… wrong game, same result.",
+            ],
+        ),
+        (
+            90,
+            [
+                "Nothing can stop me now!",
+                "The end is near — for you.",
+                "I’m basically invincible.",
+                "Dominance unlocked.",
+                "This is my board now.",
+            ],
+        ),
+        (
+            85,
+            [
+                "I’ve got this in the bag.",
+                "Sit back and watch.",
+                "Looking very comfortable.",
+                "Almost too easy.",
+                "I see the finish line.",
+            ],
+        ),
+        (
+            80,
+            [
+                "Victory is near!",
+                "I can smell the win.",
+                "One foot in the winner’s circle.",
+                "The momentum is all mine.",
+                "Just a matter of time.",
+            ],
+        ),
+        (
+            75,
+            [
+                "On my way to win!",
+                "Feeling strong out here.",
+                "Things are looking up.",
+                "I like where this is going.",
+                "Slowly but surely.",
+            ],
+        ),
+        (
+            70,
+            [
+                "Feeling confident!",
+                "I’ve got the edge.",
+                "Good position, good vibes.",
+                "I’ll take these odds.",
+                "Cautiously optimistic.",
+            ],
+        ),
+        (
+            65,
+            [
+                "This should go well.",
+                "Leaning in my favor.",
+                "I’m ahead — let’s keep it that way.",
+                "The stars are aligning.",
+                "Looking decent from here.",
+            ],
+        ),
+        (
+            60,
+            [
+                "I think I can handle this.",
+                "Slight advantage, I’ll take it.",
+                "Not bad, not bad.",
+                "Inch by inch.",
+                "Better than a coin flip!",
+            ],
+        ),
+        (
+            55,
+            [
+                "Hmm… I think I can pull this off.",
+                "It’s close, but I’ll manage.",
+                "Every bit counts now.",
+                "Grinding through it.",
+                "Staying focused.",
+            ],
+        ),
+        (
+            50,
+            [
+                "It’s anyone’s game!",
+                "Dead even — let’s see who blinks.",
+                "Totally unpredictable.",
+                "Flip a coin and pray.",
+                "May the best AI win.",
+            ],
+        ),
+        (
+            45,
+            [
+                "This is tricky… fingers crossed!",
+                "Tightrope walking here.",
+                "One wrong move…",
+                "Holding on by a thread.",
+                "Please don’t blow this.",
+            ],
+        ),
+        (
+            40,
+            [
+                "I need to focus here.",
+                "Time to dig deep.",
+                "Uphill battle starting.",
+                "Gotta earn it now.",
+                "No more easy moves.",
+            ],
+        ),
+        (
+            35,
+            [
+                "Sweating bullets…",
+                "Things are not great.",
+                "Starting to feel the pressure.",
+                "This is getting uncomfortable.",
+                "Not ideal, not ideal.",
+            ],
+        ),
+        (
+            30,
+            [
+                "I’m nervous…",
+                "Uh oh.",
+                "I may have miscalculated.",
+                "The walls are closing in.",
+                "Someone help.",
+            ],
+        ),
+        (
+            25,
+            [
+                "I’m sweating here…",
+                "It’s looking bleak.",
+                "I’ve made a terrible mistake.",
+                "Damage control mode activated.",
+                "Can I take that back?",
+            ],
+        ),
+        (
+            20,
+            [
+                "This isn’t looking great…",
+                "Falling apart at the seams.",
+                "I need a miracle.",
+                "Please make a mistake.",
+                "Praying for blunders.",
+            ],
+        ),
+        (
+            15,
+            [
+                "I might be in trouble…",
+                "Clinging to hope.",
+                "Is this salvageable?",
+                "Running out of options.",
+                "Desperate times…",
+            ],
+        ),
+        (
+            10,
+            [
+                "Yikes… this could go badly.",
+                "I don’t see a way out.",
+                "The math is not mathing.",
+                "Abandoning all hope.",
+                "Send help.",
+            ],
+        ),
+        (
+            0,
+            [
+                "Absolutely doomed…",
+                "Well, it was fun while it lasted.",
+                "I accept my fate.",
+                "RIP me.",
+                "You win this round.",
+            ],
+        ),
+    ]
 
-    variables.confidence_message = f"{confidence}% — {message}"
+    for threshold, candidates in messages_by_threshold:
+        if confidence >= threshold:
+            message = random.choice(candidates)
+            break
+
+    variables.confidence_message = f"{confidence}% {message}"
     if not variables.display_game:
-        print(f"Confidence value: {confidence}% — {message}")
+        print(f"Confidence value: {confidence}% {message}")
 
     best_child.parent = None  # detach from tree so the subtree can be GC'd
     variables.previous_mcts = best_child  # reuse this subtree next turn
