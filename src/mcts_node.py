@@ -160,7 +160,9 @@ def mcts_search(box_game_board: BoxGame, team, time_budget):
     else:
         message = "Absolutely doomed…"
 
-    print(f"Confidence value: {confidence}% — {message}")
+    variables.confidence_message = f"{confidence}% — {message}"
+    if not variables.display_game:
+        print(f"Confidence value: {confidence}% — {message}")
 
     best_child.parent = None  # detach from tree so the subtree can be GC'd
     variables.previous_mcts = best_child  # reuse this subtree next turn

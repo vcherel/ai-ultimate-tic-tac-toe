@@ -36,6 +36,8 @@ class Variables:
         self.simulating = False
         self.previous_mcts = None
         self.debug = False
+        self.confidence_message = None
+        self.confidence_text_rect = None
 
     def set_game_parameters(
         self, player1_auto, player1_strategy, player2_auto, player2_strategy

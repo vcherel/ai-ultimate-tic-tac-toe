@@ -1,4 +1,4 @@
-from text import change_text_victory
+from text import change_text_victory, draw_confidence_text
 from draw import draw_actual_player
 from variables import variables
 from player import Player
@@ -22,11 +22,13 @@ class Game:
         board.init()
         variables.set_winner(None)
         variables.set_finished(False)
+        variables.confidence_message = None
         variables.actual_player = random.choice(self.players)
 
         if variables.display_game:
             change_text_victory("This is the turn of : ")
             board.draw()
+            draw_confidence_text()
             draw_actual_player(variables.get_current_team())
 
     def play(self, pos=None):
@@ -57,10 +59,12 @@ class Game:
             if variables.display_game:
                 draw_actual_player(variables.get_current_team(), erase=True)
                 board.draw()
+                draw_confidence_text()
         else:
             self.change_player()
             if variables.display_game:
                 board.draw()
+                draw_confidence_text()
 
     def change_player(self):
         self.first_move = False

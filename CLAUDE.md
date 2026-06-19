@@ -9,7 +9,9 @@ uv sync
 uv run python src/main.py
 ```
 
-Common flags: `--player1_auto True`, `--player2_strategy mcts`, `--mcts_iterations 200`
+Common flags: `--player1_auto True`, `--player2_strategy mcts`, `--mcts_time 1.0`
+
+All flags: `--nb_games`, `--display_game`, `--size_board`, `--player1_auto`, `--player1_strategy`, `--player2_auto`, `--player2_strategy`, `--mcts_time`, `--save_results`
 
 ## Key files
 
