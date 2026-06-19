@@ -53,7 +53,11 @@ class Game:
             else:
                 box_to_play.play(actual_player.team, playable_boxes)
 
-        if not variables.finished:
+        if variables.finished:
+            if variables.display_game:
+                draw_actual_player(variables.get_current_team(), erase=True)
+                board.draw()
+        else:
             self.change_player()
             if variables.display_game:
                 board.draw()

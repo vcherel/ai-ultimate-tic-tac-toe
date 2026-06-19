@@ -1,4 +1,4 @@
-from variables import variables
+from variables import variables, RED, BLUE
 from box_draw import BoxDraw
 import random
 
@@ -27,6 +27,8 @@ class BoxGame:
         self.state = None
         self.playable = False
         self.id_box = id_box
+        self.winning_line_start = None
+        self.winning_line_end = None
 
         self.parent: BoxGame = parent
 
@@ -117,6 +119,12 @@ class BoxGame:
 
             self.draw()  # redraw self after children so border lines aren't overwritten
 
+            if self.winning_line_start is not None:
+                color = RED if self.state else BLUE
+                self.box_draw.draw_winning_line(
+                    self.winning_line_start, self.winning_line_end, color
+                )
+
     def search_click(self, pos, playable_boxes):
         result_search = self.box_draw.search_click(
             self.childs == [], self.state, self.playable, pos
@@ -185,7 +193,7 @@ class BoxGame:
 
         first_box = self.get_first_box()
 
-        if first_box.childs == []:
+        if first_box.state is not None:
             return
 
         for playable_box in playable_boxes:
@@ -196,6 +204,39 @@ class BoxGame:
         next_box_to_play.make_childs_playable()
 
         return
+
+    def find_winning_combo(self):
+        """Returns [a, b, c] indices of the 3 winning children, or None."""
+        for i in range(3):
+            if all(
+                self.childs[i * 3 + j].state == self.childs[i * 3].state
+                and self.childs[i * 3 + j].state is not None
+                for j in range(1, 3)
+            ):
+                return [i * 3, i * 3 + 1, i * 3 + 2]
+
+            if all(
+                self.childs[i + j * 3].state == self.childs[i].state
+                and self.childs[i + j * 3].state is not None
+                for j in range(1, 3)
+            ):
+                return [i, i + 3, i + 6]
+
+        if all(
+            self.childs[i * 4].state == self.childs[0].state
+            and self.childs[i * 4].state is not None
+            for i in range(1, 3)
+        ):
+            return [0, 4, 8]
+
+        if all(
+            self.childs[i * 2 + 2].state == self.childs[2].state
+            and self.childs[i * 2 + 2].state is not None
+            for i in range(1, 3)
+        ):
+            return [2, 4, 6]
+
+        return None
 
     def detect_victory(self):
         for i in range(3):
@@ -230,18 +271,27 @@ class BoxGame:
         return False
 
     def victory(self, current_team):
-        self.childs = []
         self.state = current_team
 
-        self.make_unplayable(victory=self.parent is None)
-
-        if self.parent is None:
+        if self.parent is None and self.box_draw is not None:
+            # Display root win: keep sub-boards visible; save winning line endpoints
+            combo = self.find_winning_combo()
+            if combo:
+                self.winning_line_start = self.childs[combo[0]].box_draw.center
+                self.winning_line_end = self.childs[combo[2]].box_draw.center
+            self.make_unplayable(victory=True)
             variables.set_finished(True)
             variables.set_winner(self.state)
-
-        # a single move can trigger cascading wins up multiple board levels
-        elif self.parent.detect_victory():
-            self.parent.victory(current_team)
+        else:
+            # Headless root or any sub-board win: collapse to single symbol
+            self.childs = []
+            self.make_unplayable(victory=self.parent is None)
+            if self.parent is None:
+                variables.set_finished(True)
+                variables.set_winner(self.state)
+            # a single move can trigger cascading wins up multiple board levels
+            elif self.parent.detect_victory():
+                self.parent.victory(current_team)
 
     def get_all_playable_boxes(self):
         if self.childs == []:
@@ -257,8 +307,7 @@ class BoxGame:
         box_game_copy = self.copy()  # don't mutate the real board
 
         while True:
-            # childs == [] on the root means the board itself has been won
-            if box_game_copy.childs == [] or box_game_copy.detect_victory():
+            if box_game_copy.state is not None:
                 return not next_team_to_play
 
             playable_boxes = box_game_copy.get_all_playable_boxes()

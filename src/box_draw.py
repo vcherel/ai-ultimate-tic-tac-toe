@@ -19,13 +19,15 @@ class BoxDraw:
 
     def draw(self, small_box, big_box, state):
         """
-        small_box: True if the box has no children (leaf cell)
+        small_box: True if the box has no children (leaf cell or won sub-board)
         big_box: True if this is the outermost board
         """
         if small_box:
             pygame.draw.rect(
                 variables.screen, self.color, (self.x, self.y, self.width, self.width)
             )
+            if state is not None:
+                self.draw_symbol(state)
 
         if not big_box:  # no border around the outermost box — looks cleaner
             screen = variables.screen
@@ -58,9 +60,6 @@ class BoxDraw:
                 self.width_line,
             )
 
-        if state is not None:
-            self.draw_symbol(state)
-
     def draw_symbol(self, state):
         """state must not be None when called"""
         if state:
@@ -86,6 +85,10 @@ class BoxDraw:
             return None
 
         return row * 3 + col
+
+    def draw_winning_line(self, start, end, color):
+        line_width = max(4, self.width // 25)
+        pygame.draw.line(variables.screen, color, start, end, line_width)
 
     def make_playable(self):
         self.color = GREEN
