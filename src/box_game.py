@@ -81,8 +81,8 @@ class BoxGame:
             )
         )
 
-    def copy(self, parent=None):
-        if self.box_draw is not None:
+    def copy(self, parent=None, no_draw=False):
+        if self.box_draw is not None and not no_draw:
             new_box = BoxGame(
                 self.depth,
                 self.id_box,
@@ -100,7 +100,7 @@ class BoxGame:
         new_box.playable = self.playable
 
         new_box.childs = (
-            [child.copy(parent=new_box) for child in self.childs]
+            [child.copy(parent=new_box, no_draw=no_draw) for child in self.childs]
             if self.depth > 0
             else []
         )

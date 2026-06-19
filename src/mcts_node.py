@@ -1,8 +1,21 @@
 from box_game import BoxGame, find_same_box_in_other_board
 from variables import variables
 from tqdm import tqdm
+import multiprocessing
 import random
 import math
+
+
+def _simulate_once(args):
+    """Top-level for multiprocessing pickling. Runs one rollout and returns the score."""
+    board, team_to_play, team_root = args
+    winner = board.simulate(team_to_play)
+    if winner == team_root:
+        return 3
+    elif winner is None:
+        return 1
+    else:
+        return 0.0
 
 
 class MCTSNode:
@@ -64,8 +77,9 @@ class MCTSNode:
 def mcts_search(box_game_board: BoxGame, team, num_iterations):
     variables.set_simulating(True)
 
-    box_game_board_copy = box_game_board.copy()
-    box_game_board_copy.box_draw = None
+    num_workers = multiprocessing.cpu_count()
+
+    box_game_board_copy = box_game_board.copy(no_draw=True)
 
     if variables.previous_mcts is not None:
         root = variables.previous_mcts
@@ -75,21 +89,25 @@ def mcts_search(box_game_board: BoxGame, team, num_iterations):
         )
 
     num_iterations = num_iterations * len(root.box_game_board.get_all_playable_boxes())
+    loop_count = max(1, num_iterations // num_workers)
 
     pbar = tqdm(
-        desc=f"MCTS Search ({num_iterations:,} iterations)",
-        total=num_iterations,
-        unit="iterations",
+        desc=f"MCTS Search ({loop_count * num_workers:,} simulations, {num_workers} workers)",
+        total=loop_count * num_workers,
+        unit="sim",
         colour="green",
     )
 
-    for _ in range(num_iterations):
-        node = select(root)
-        nodes_to_simulate = expand(node)
-        for node_to_simulate in nodes_to_simulate:
-            score = simulate(node_to_simulate)
-            backpropagate(node_to_simulate, score)
-        pbar.update(1)
+    with multiprocessing.Pool(processes=num_workers) as pool:
+        for _ in range(loop_count):
+            node = select(root)
+            node = expand(node)
+            sim_args = [
+                (node.box_game_board, node.team_to_play, node.team_root)
+            ] * num_workers
+            for score in pool.map(_simulate_once, sim_args):
+                backpropagate(node, score)
+            pbar.update(num_workers)
 
     pbar.close()
 
@@ -183,37 +201,34 @@ def select_best_direct_child(node: MCTSNode, use_uct=True):
 def expand(node: MCTSNode):
     possible_boxes_to_play = node.box_game_board.get_all_playable_boxes()
 
-    new_nodes = []
-    for box_to_play in possible_boxes_to_play:
-        copy_box_game_board = node.box_game_board.copy()
-        box_to_play_copy = find_same_box_in_other_board(
-            box_to_play, copy_box_game_board
-        )
-
-        # playable boxes must come from the copied board, not the original
-        possible_boxes_to_play_copy = []
-        for possible_box_to_play in possible_boxes_to_play:
-            possible_boxes_to_play_copy.append(
-                find_same_box_in_other_board(possible_box_to_play, copy_box_game_board)
-            )
-
-        box_to_play_copy.play(node.team_to_play, possible_boxes_to_play_copy)
-        new_node = MCTSNode(
-            box_game_board=copy_box_game_board,
-            team_root=node.team_root,
-            team_to_play=not node.team_to_play,
-            parent=node,
-            previous_box_played=box_to_play_copy,
-        )
-        node.childs.append(new_node)
-        new_nodes.append(new_node)
-
-    if new_nodes == []:
+    if not possible_boxes_to_play:
         if variables.debug:
             print("No new nodes")
-        return [node]
+        return node
 
-    return new_nodes
+    existing_ids = {child.id for child in node.childs}
+    unvisited = [b for b in possible_boxes_to_play if b.get_path() not in existing_ids]
+
+    box_to_play = random.choice(unvisited)
+
+    copy_box_game_board = node.box_game_board.copy(no_draw=True)
+    box_to_play_copy = find_same_box_in_other_board(box_to_play, copy_box_game_board)
+    # playable boxes must come from the copied board, not the original
+    possible_boxes_to_play_copy = [
+        find_same_box_in_other_board(b, copy_box_game_board)
+        for b in possible_boxes_to_play
+    ]
+    box_to_play_copy.play(node.team_to_play, possible_boxes_to_play_copy)
+
+    new_node = MCTSNode(
+        box_game_board=copy_box_game_board,
+        team_root=node.team_root,
+        team_to_play=not node.team_to_play,
+        parent=node,
+        previous_box_played=box_to_play_copy,
+    )
+    node.childs.append(new_node)
+    return new_node
 
 
 def simulate(node: MCTSNode):
