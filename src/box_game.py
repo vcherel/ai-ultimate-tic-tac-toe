@@ -44,114 +44,20 @@ class BoxGame:
 
             else:
                 width_line = int(width_line // 2)
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        0,
-                        self,
-                        draw=True,
-                        x=x,
-                        y=y,
-                        width=width // 3,
-                        width_line=width_line,
+                cell = width // 3
+                for i in range(9):
+                    self.childs.append(
+                        BoxGame(
+                            depth - 1,
+                            i,
+                            self,
+                            draw=True,
+                            x=x + (i % 3) * cell,
+                            y=y + (i // 3) * cell,
+                            width=cell,
+                            width_line=width_line,
+                        )
                     )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        1,
-                        self,
-                        draw=True,
-                        x=x + width // 3,
-                        y=y,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        2,
-                        self,
-                        draw=True,
-                        x=x + 2 * width // 3,
-                        y=y,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        3,
-                        self,
-                        draw=True,
-                        x=x,
-                        y=y + width // 3,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        4,
-                        self,
-                        draw=True,
-                        x=x + width // 3,
-                        y=y + width // 3,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        5,
-                        self,
-                        draw=True,
-                        x=x + 2 * width // 3,
-                        y=y + width // 3,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        6,
-                        self,
-                        draw=True,
-                        x=x,
-                        y=y + 2 * width // 3,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        7,
-                        self,
-                        draw=True,
-                        x=x + width // 3,
-                        y=y + 2 * width // 3,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
-                self.childs.append(
-                    BoxGame(
-                        depth - 1,
-                        8,
-                        self,
-                        draw=True,
-                        x=x + 2 * width // 3,
-                        y=y + 2 * width // 3,
-                        width=width // 3,
-                        width_line=width_line,
-                    )
-                )
 
         if self.depth == 0:
             self.make_playable()
